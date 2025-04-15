@@ -7,7 +7,8 @@ import {
     PanResponder,
     Keyboard,
     TouchableWithoutFeedback,
-    TouchableOpacity
+    TouchableOpacity,
+    Modal
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
@@ -17,9 +18,11 @@ export default function App() {
     const [answer, setAnswer] = useState('');
     const [correctCount, setCorrectCount] = useState(0);
     const [wordsSeen, setWordsSeen] = useState(0);
+    const [showModal, setShowModal] = useState(false);
+    const [newWord, setNewWord] = useState('');
 
     useEffect(() => {
-        fetch('http://10.0.0.197:6060/words')
+        fetch('http://10.74.139.112:6060/words')
             .then(response => response.json())
             .then(data => {
                 setWords(data['words']);
@@ -31,7 +34,7 @@ export default function App() {
       }, []);
 
     const goToNextWord = () => {
-        fetch('http://10.0.0.197:6060/checkDefinition', {
+        fetch('http://10.74.139.112:6060/checkDefinition', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -40,9 +43,10 @@ export default function App() {
                 word: words[currentWordIndex], 
                 definition: answer 
             })
-        }).then(response => {
-            response = response.json();
-            var isCorrect = response['verdict']; 
+        })
+        .then(response => response = response.json())
+        .then(data => {
+            var isCorrect = data['verdict']; 
             if(isCorrect) {
                 setCorrectCount(prev => prev + 1);
             }
@@ -72,12 +76,53 @@ export default function App() {
     ).current;
 
     const handleAddWord = () => {
-        setWords(prevWords => [...prevWords, 'NewWord']);
+        setShowModal(true);
+    };
+
+    const handleSubmitNewWord = () => {
+        fetch('http://10.74.139.112:6060/insertWord', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                word: newWord.trim()
+            })
+        }).then(() => {
+            setNewWord('');
+            setShowModal(false);
+        });
     };
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.container} {...panResponder.panHandlers}>
+                {/* Modal for adding a new word */}
+                <Modal
+                    visible={showModal}
+                    transparent={true}
+                    animationType="slide"
+                    onRequestClose={() => setShowModal(false)}
+                    >
+                    <TouchableWithoutFeedback onPress={() => setShowModal(false)}>
+                        <View style={styles.modalOverlay}>
+                            <TouchableWithoutFeedback>
+                                <View style={styles.modalContent}>
+                                    <Text style={styles.modalTitle}>Add New Word</Text>
+                                    <TextInput
+                                        style={styles.modalInput}
+                                        placeholder="Type new word..."
+                                        value={newWord}
+                                        onChangeText={setNewWord}
+                                        returnKeyType="done"
+                                        onSubmitEditing={handleSubmitNewWord}
+                                        autoFocus={true}
+                                    />
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
                 <TouchableOpacity style={styles.addWordButton} onPress={handleAddWord}>
                     <Text style={styles.addWordButtonText}>Add Word</Text>
                 </TouchableOpacity>
@@ -141,5 +186,31 @@ const styles = StyleSheet.create({
     scoreText: {
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    modalContent: {
+        width: '80%',
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 8,
+        alignItems: 'center'
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10
+    },
+    modalInput: {
+        width: '100%',
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        fontSize: 16
     },
 });

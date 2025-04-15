@@ -11,7 +11,7 @@ URI = os.getenv('URI')
 GEMINI_API = os.getenv('GEMINI_API')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
-print(f"Using Gemini model: {GEMINI_API}")
+print(f"Using Gemini model {GEMINI_API}")
 
 app = Flask(__name__)
 CORS(app)
@@ -36,7 +36,7 @@ with open('prompt.txt', 'r') as f:
     lines = [line.strip() for line in f.readlines()]
     template_prompt = " ".join(lines)
 
-@app.route('/insert', methods = ['POST'])
+@app.route('/insertWord', methods = ['POST'])
 def insert_word():
     params = request.get_json()
     word = params['word'].strip().lower()
