@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
+    Animated,
     StyleSheet, 
     Text, 
     View, 
@@ -21,8 +22,11 @@ export default function App() {
     const [showModal, setShowModal] = useState(false);
     const [newWord, setNewWord] = useState('');
 
+    const [feedback, setFeedback] = useState(null);
+    const borderAnim = useState(new Animated.Value(0))[0];
+
     useEffect(() => {
-        fetch('http://10.74.139.112:6060/words')
+        fetch('http://10.75.181.20:6060/words')
             .then(response => response.json())
             .then(data => {
                 setWords(data['words']);
@@ -34,7 +38,7 @@ export default function App() {
       }, []);
 
     const goToNextWord = () => {
-        fetch('http://10.74.139.112:6060/checkDefinition', {
+        fetch('http://10.75.181.20:6060/checkDefinition', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -49,10 +53,30 @@ export default function App() {
             var isCorrect = data['verdict']; 
             if(isCorrect) {
                 setCorrectCount(prev => prev + 1);
+                setFeedback('correct');
+            } else {
+                setFeedback('wrong');
             }
+            Animated.sequence([
+                Animated.timing(borderAnim, { 
+                    toValue: 1, 
+                    duration: 200, 
+                    useNativeDriver: false 
+                }),
+                Animated.delay(1000),
+                Animated.timing(borderAnim, { 
+                    toValue: 0, 
+                    duration: 200, 
+                    useNativeDriver: false 
+                })
+                ]).start(() => {
+                setFeedback(null);
+            });
+
             setWordsSeen(prev => prev + 1);
             setAnswer('');
             setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length);
+            
             Keyboard.dismiss();
             return isCorrect;
         })
@@ -80,7 +104,7 @@ export default function App() {
     };
 
     const handleSubmitNewWord = () => {
-        fetch('http://10.74.139.112:6060/insertWord', {
+        fetch('http://10.75.181.20:6060/insertWord', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -94,10 +118,21 @@ export default function App() {
         });
     };
 
+    const borderColor = feedback === 'correct' 
+    ? borderAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['transparent', 'green']
+    })
+    : feedback === 'wrong'
+    ? borderAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['transparent', 'red']
+    })
+    : 'transparent';
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.container} {...panResponder.panHandlers}>
-                {/* Modal for adding a new word */}
+            <Animated.View style={[styles.container, { borderWidth: 5, borderColor: borderColor }]} {...panResponder.panHandlers}>
                 <Modal
                     visible={showModal}
                     transparent={true}
@@ -141,7 +176,7 @@ export default function App() {
                     onSubmitEditing={goToNextWord}
                 />
                 <StatusBar style="auto" />
-            </View>
+            </Animated.View>
         </TouchableWithoutFeedback>
     );
 }
