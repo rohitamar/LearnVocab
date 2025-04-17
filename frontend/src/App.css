@@ -1,0 +1,117 @@
+.container {
+	position: relative;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	box-sizing: border-box;
+	background: #fff;
+}
+
+.word-text {
+	font-size: 3rem;
+	font-weight: bold;
+	margin-bottom: 1.5rem;
+}
+
+.input {
+	width: 100%;
+	max-width: 500px;
+	padding: 1rem;
+	font-size: 1.25rem;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+.add-word-button {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	background: none;
+	border: none;
+	font-size: 1rem;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.score-container {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	font-size: 1rem;
+	font-weight: bold;
+}
+
+.modal-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.modal-content {
+	width: 90%;
+	max-width: 600px;
+	padding: 2rem;
+	background: #fff;
+	border-radius: 8px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.modal-content h2 {
+	margin-bottom: 1rem;
+	text-align: center;
+}
+
+.modal-content form {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.modal-input {
+	width: 100%;
+	max-width: 400px;
+	padding: 0.75rem;
+	font-size: 1rem;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	margin-bottom: 1rem;
+}
+
+.modal-content button[type="submit"] {
+	padding: 0.75rem 1.5rem;
+	font-size: 1rem;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.toast {
+	position: absolute;
+	top: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 0.5rem 1rem;
+	border-radius: 5px;
+	color: #fff;
+	font-weight: bold;
+	opacity: 0.9;
+	z-index: 1000;
+}
+
+.toast.correct {
+	background: #4caf50;
+}
+
+.toast.incorrect {
+	background: #f44336;
+}

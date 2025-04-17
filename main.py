@@ -53,7 +53,6 @@ def get_words():
     response = words_db.find({}, {'_id': 0, 'word': 1})
     words = list(map(lambda x : x['word'], response)) 
     random.shuffle(words)
-    print(words)
     return jsonify({
         'words': words
     })
