@@ -1,6 +1,5 @@
-// src/App.js
 import React, { useState, useRef, useEffect } from 'react';
-import './App.css';
+import './styles/App.css';
 
 export default function App() {
 	const [words, setWords] = useState([]);
@@ -53,7 +52,7 @@ export default function App() {
 
 	const handleSubmitNewWord = e => {
 		e.preventDefault();
-		const w = newWord.trim();
+		const w = newWord.trim().toLowerCase();
 		if(w) {
 			fetch('http://10.0.0.197:6060/insertWord', {
 				method: 'POST',
