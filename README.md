@@ -1,1 +1,5 @@
 # LearnVocab
+
+Using Gemini to see if the definition that I send matches the official definition. What I eventually want to do:
+- The prompt right now doesn't pass in the definition of the word. Might skew results for words that have multiple and different definitions. I think it might be better to add the definition for even better results.
+- Gemini is fairly slow. Once there's many definitions for a particular word, we could try MiniLM embedding + weighted kNN (on the score) and see if the results match up. In general, it probably will -- once you've seen a word maybe 15-20 times, the definition you have for it is probably fairly similar to the previous 5 times you saw it. So, I think this should work and will speed up the evaluation procedure. 
