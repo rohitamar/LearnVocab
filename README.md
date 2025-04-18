@@ -1,6 +1,6 @@
 # LearnVocab
 
-Using Gemini to see if the definition that I send matches the official definition. I made a Expo App, but then thought that a website would be better -- so, now I have both in this repo.
+Web/Mobile app that shows you a word, you type the definition, and the app tells you if it's right or not. Currently, using Gemini to do evaluation (see prompt.txt). I made an Expo App, but then thought that a website would be better -- so, now I have both in this repo.
 
 What I eventually want to do:
 - The prompt right now doesn't pass in the definition of the word. Might skew results for words that have multiple and different definitions. I think it might be better to add the definition for even better results.
