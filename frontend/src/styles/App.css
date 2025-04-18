@@ -36,10 +36,28 @@
 	cursor: pointer;
 }
 
-.score-container {
+.accuracy-container {
 	position: absolute;
 	top: 20px;
 	right: 20px;
+	font-size: 1rem;
+	font-weight: bold;
+}
+
+.total-score-container {
+	position: absolute;
+	top: 40px;
+	right: 20px;
+	margin-top: 0.5rem;
+	font-size: 1rem;
+	font-weight: bold;
+}
+
+.correct-score-container {
+	position: absolute;
+	top: 70px;
+	right: 20px;
+	margin-top: 0.5rem;
 	font-size: 1rem;
 	font-weight: bold;
 }
@@ -114,4 +132,12 @@
 
 .toast.incorrect {
 	background: #f44336;
+}
+
+.total-words-container {
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	font-size: 1rem;
+	font-weight: bold;
 }

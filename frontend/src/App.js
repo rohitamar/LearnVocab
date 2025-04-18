@@ -7,6 +7,8 @@ export default function App() {
 	const [answer, setAnswer] = useState('');
 	const [correctCount, setCorrectCount] = useState(0);
 	const [wordsSeen, setWordsSeen] = useState(0);
+	const [totScore, setTotScore] = useState(0.0);
+	const [correctScore, setCorrectScore] = useState(0.0);
 	const [showModal, setShowModal] = useState(false);
 	const [newWord, setNewWord] = useState('');
 	const [toast, setToast] = useState({ message: '', type: '' });
@@ -35,10 +37,16 @@ export default function App() {
 		})
 			.then(res => res.json())
 			.then(data => {
-				if (data.verdict) setCorrectCount(c => c + 1);
+				console.log(typeof(data.verdict));
+				let verdict = data.score >= 0.75
+				if (verdict >= 0.75) {
+					setCorrectCount(c => c + 1);
+					setCorrectScore(score => score + data.score);
+				}
+				setTotScore(score => score + data.score);
 				setWordsSeen(s => s + 1);
-				showToast(data.verdict ? 'Correct' : 'Incorrect', 
-							data.verdict ? 'correct' : 'incorrect');
+				showToast(verdict ? 'Correct' : 'Incorrect', 
+					verdict ? 'correct' : 'incorrect');
 				setAnswer('');
 				setCurrentWordIndex(i => (i + 1) % words.length);
 				inputRef.current?.blur();
@@ -61,6 +69,7 @@ export default function App() {
 					word: w
 				})
 			});
+			setWords(words => [...words, w]);
 		}
 		setNewWord('');
 		setShowModal(false);
@@ -79,9 +88,21 @@ export default function App() {
 			>
 				Add Word
 			</button>
+			
+			<div className="total-words-container">
+				Total words: {words.length}
+			</div>
 
-			<div className="score-container">
-				{correctCount} / {wordsSeen}
+			<div className="accuracy-container">
+				Accuracy: {correctCount} / {wordsSeen}
+			</div>
+
+			<div className="total-score-container">
+				Average total score: {wordsSeen == 0 ? 0 : totScore / correctCount}
+			</div>
+
+			<div className="correct-score-container">
+				Average correct score: {wordsSeen == 0 ? 0 : correctScore / wordsSeen}
 			</div>
 
 			<div className="word-text">

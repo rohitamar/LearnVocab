@@ -1,5 +1,6 @@
-from dotenv import load_dotenv 
-from flask import Flask, jsonify, request
+from dotenv import load_dotenv
+from datetime import datetime, timezone
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import google.generativeai as genai
 import os
@@ -13,7 +14,11 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 print(f"Using Gemini model {GEMINI_API}")
 
-app = Flask(__name__)
+build_dir = os.path.join(os.path.dirname(__file__), 'frontend', 'build')
+app = Flask(__name__,
+            static_folder=build_dir,
+            static_url_path='')
+
 CORS(app)
 
 client = MongoClient(URI)
@@ -35,6 +40,12 @@ chat_session = model.start_chat(history=[])
 with open('prompt.txt', 'r') as f:
     lines = [line.strip() for line in f.readlines()]
     template_prompt = " ".join(lines)
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    return send_from_directory(app.static_folder,
+                               path or 'index.html')
 
 @app.route('/insertWord', methods = ['POST'])
 def insert_word():
@@ -62,16 +73,29 @@ def check_definition():
     global template_prompt
     params = request.get_json()
     word, definition = params['word'], params['definition']
+
     prompt = f"{template_prompt} WORD={word}, DEFINITION={definition}"
     response = chat_session.send_message(prompt)
 
-    nmr = response.text.strip()
-    nmr = float(nmr) 
-    print(nmr) 
+    score = response.text.strip()
+    score = float(score) 
+
+    words_db.update_one({
+        "word": word
+    },
+    {
+        "$push": {
+            "wordDefinitions": {
+                "definition": definition,
+                "score": score,
+                "date": datetime.now(timezone.utc)
+            }
+        }
+    })
     
     return jsonify({
         'status_code': 200,
-        'verdict': nmr >= 0.75
+        'score': score
     }), 200
 
 if __name__ == '__main__':
