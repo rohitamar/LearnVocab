@@ -15,9 +15,12 @@ export default function App() {
 	const inputRef = useRef(null);
 
 	useEffect(() => {
-		fetch('http://10.0.0.197:6060/words')
+		fetch('http://localhost:6060/words')
 			.then(res => res.json())
-			.then(data => setWords(data.words))
+			.then(data => {
+				setWords(data.words)
+				console.log(data.words)
+			})
 			.catch(console.error);
 	}, []);
 
@@ -27,7 +30,7 @@ export default function App() {
 	};
 
 	const goToNextWord = () => {
-		fetch('http://10.0.0.197:6060/checkDefinition', {
+		fetch('http://localhost:6060/checkDefinition', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -62,7 +65,7 @@ export default function App() {
 		e.preventDefault();
 		const w = newWord.trim().toLowerCase();
 		if(w) {
-			fetch('http://10.0.0.197:6060/insertWord', {
+			fetch('http://localhost:6060/insertWord', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
@@ -97,9 +100,9 @@ export default function App() {
 				Accuracy: {correctCount} / {wordsSeen}
 			</div>
 
-			<div className="total-score-container">
+			{/* <div className="total-score-container">
 				Average total score: {wordsSeen == 0 ? 0 : totScore / correctCount}
-			</div>
+			</div> */}
 
 			<div className="correct-score-container">
 				Average correct score: {wordsSeen == 0 ? 0 : correctScore / wordsSeen}

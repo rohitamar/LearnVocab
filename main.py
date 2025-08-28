@@ -23,6 +23,7 @@ CORS(app)
 
 client = MongoClient(URI)
 words_db = client['words']['words']
+print(words_db)
 
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(
@@ -35,7 +36,7 @@ model = genai.GenerativeModel(
         "response_mime_type": "text/plain",
     }
 )
-chat_session = model.start_chat(history=[])
+# chat_session = model.start_chat(history=[])
 
 with open('prompt.txt', 'r') as f:
     lines = [line.strip() for line in f.readlines()]
@@ -51,9 +52,11 @@ def serve(path):
 def insert_word():
     params = request.get_json()
     word = params['word'].strip().lower()
-    _ = words_db.insert_one({
-        'word': word
-    })
+    fltr = {'word': word}
+    if words_db.count_documents(fltr) == 0:
+        _ = words_db.insert_one({
+            'word': word
+        })
     return jsonify({
         'status_code': 200,
         'message': f'Successfully inserted {word}'
@@ -75,7 +78,7 @@ def check_definition():
     word, definition = params['word'], params['definition']
 
     prompt = f"{template_prompt} WORD={word}, DEFINITION={definition}"
-    response = chat_session.send_message(prompt)
+    response = model.generate_content(prompt)
 
     score = response.text.strip()
     score = float(score) 

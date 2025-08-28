@@ -26,7 +26,7 @@ export default function App() {
     const borderAnim = useState(new Animated.Value(0))[0];
 
     useEffect(() => {
-        fetch('http://10.75.181.20:6060/words')
+        fetch('http://10.75.154.122:6060/words')
             .then(response => response.json())
             .then(data => {
                 setWords(data['words']);
@@ -38,7 +38,7 @@ export default function App() {
       }, []);
 
     const goToNextWord = () => {
-        fetch('http://10.75.181.20:6060/checkDefinition', {
+        fetch('http://10.75.154.122:6060/checkDefinition', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -104,7 +104,7 @@ export default function App() {
     };
 
     const handleSubmitNewWord = () => {
-        fetch('http://10.75.181.20:6060/insertWord', {
+        fetch('http://10.75.154.122:6060/insertWord', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
